@@ -8,7 +8,7 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
-@Table( name = "contaBancaria" )
+@Table( name = "contas_bancarias" )
 public class ContaBancaria {
 
     @Id
@@ -21,7 +21,7 @@ public class ContaBancaria {
 
     private BigDecimal saldo;
 
-    private boolean ativo;
+    private boolean ativa;
 
     @ManyToOne( fetch = FetchType.LAZY, optional = false)
     @JoinColumn( name = "titular_id" )
@@ -33,11 +33,17 @@ public class ContaBancaria {
 
     public ContaBancaria() {}
 
-    public ContaBancaria( String agencia, String numero, BigDecimal saldo, boolean ativo, Pessoa titular, TipoConta tipoConta) {
+    public ContaBancaria( String agencia, String numero, BigDecimal saldo,
+                          boolean ativa, Pessoa titular, TipoConta tipoConta) {
+        if( saldo == null || saldo.compareTo(BigDecimal.ZERO) < 0 ) {
+            throw new ValorMovimentacaoInvalidoException(
+                    "Saldo inicial não pode ser negativo."
+            );
+        }
         this.agencia = agencia;
         this.numero = numero;
         this.saldo = saldo;
-        this.ativo = ativo;
+        this.ativa = ativa;
         this.titular = titular;
         this.tipoConta = tipoConta;
     }
@@ -70,7 +76,7 @@ public class ContaBancaria {
     }
 
     public void validarContaAtiva() {
-        if( this.ativo ) {
+        if( !this.ativa ) {
             throw new ContaInativaException(
                     "Conta inativa, não pode ser movimentada."
             );
@@ -96,7 +102,7 @@ public class ContaBancaria {
     }
 
     public boolean isAtivo() {
-        return ativo;
+        return ativa;
     }
 
     public Pessoa getPessoa() {

@@ -7,7 +7,7 @@ import org.hibernate.validator.constraints.br.CPF;
 
 public record PessoaRequest(
         @NotBlank( message = "Nome é obrigatório." )
-        @Size( min = 3, max = 120, message = "Nome dever ter entre 20 e 120 caracteres." )
+        @Size( min = 3, max = 120, message = "Nome dever ter entre 3 e 120 caracteres." )
         String nome,
 
         @NotBlank

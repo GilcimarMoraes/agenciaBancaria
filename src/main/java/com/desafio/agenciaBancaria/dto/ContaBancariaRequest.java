@@ -14,7 +14,7 @@ public record ContaBancariaRequest(
 
         @NotBlank( message = "O número da conta é obrigatório" )
         @Pattern( regexp = "\\d{6}-\\d", message = "O número deve seguir o formato 123456-7" )
-        int numero,
+        String numero,
 
         @NotNull( message = "O saldo inicial é obrigatório" )
         @DecimalMin( value = "0.00", inclusive = true,
@@ -27,7 +27,7 @@ public record ContaBancariaRequest(
         @NotNull( message = "O titularId é obrigatório." )
         Long titularId,
 
-        @NotNull( message = "O titularId é obrigatório." )
+        @NotNull( message = "O tipoContaId é obrigatório." )
         Long tipoContaId
 ) {
 }

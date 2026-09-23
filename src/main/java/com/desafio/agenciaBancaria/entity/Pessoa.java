@@ -7,20 +7,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table( name = "tabela" )
+@Table( name = "pessoas" )
 public class Pessoa {
 
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY )
     private Long id;
 
+    @Column( unique = true, nullable = false, length = 120)
     private String nome;
 
+    @Column( unique = true, nullable = false, length = 11)
     private String cpf;
 
+    @Column( unique = true, nullable = false, length = 150)
     private String email;
 
-    @OneToMany( fetch = FetchType.LAZY )
+    @OneToMany( fetch = FetchType.LAZY, mappedBy = "titular")
     private List<ContaBancaria> contas = new ArrayList<>();
 
     public Pessoa() {}

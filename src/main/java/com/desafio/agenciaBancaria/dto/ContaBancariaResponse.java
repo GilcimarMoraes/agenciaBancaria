@@ -15,7 +15,7 @@ public record ContaBancariaResponse(
         Long tipoId
 ) {
 
-    public ContaBancariaResponse deEntity( ContaBancaria contaBancaria ) {
+    public static ContaBancariaResponse deEntity( ContaBancaria contaBancaria ) {
         return new ContaBancariaResponse(
                 contaBancaria.getId(),
                 contaBancaria.getAgencia(),
