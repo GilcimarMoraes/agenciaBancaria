@@ -2,9 +2,11 @@ package com.desafio.agenciaBancaria.service;
 
 import com.desafio.agenciaBancaria.dto.ContaBancariaRequest;
 import com.desafio.agenciaBancaria.dto.ContaBancariaResponse;
+import com.desafio.agenciaBancaria.dto.MovimentacaoRequest;
 import com.desafio.agenciaBancaria.entity.ContaBancaria;
 import com.desafio.agenciaBancaria.entity.Pessoa;
 import com.desafio.agenciaBancaria.entity.TipoConta;
+import com.desafio.agenciaBancaria.exception.ContaInexistenteException;
 import com.desafio.agenciaBancaria.repository.ContaBancariaRepository;
 import com.desafio.agenciaBancaria.repository.PessoaRepository;
 import com.desafio.agenciaBancaria.repository.TipoContaRepository;
@@ -28,9 +30,16 @@ public class ContaBancariaService {
         this.tipoContaRepository = tipoContaRepository;
     }
 
+    public ContaBancariaResponse buscarPorId( Long id ) {
+        ContaBancaria conta = contaBancariaRepository.findById( id )
+                .orElseThrow( () -> new ContaInexistenteException( id ));
+
+        return ContaBancariaResponse.deEntity( conta );
+    }
+
 
     @Transactional
-    public ContaBancaria abrirConta(ContaBancariaRequest request ) {
+    public ContaBancariaResponse abrirConta(ContaBancariaRequest request ) {
         Pessoa pessoa = pessoaRepository.findById( request.titularId() )
                 .orElseThrow( () -> new RuntimeException( "Nao encontrado." ) );
 
@@ -40,7 +49,36 @@ public class ContaBancariaService {
         ContaBancaria conta = new ContaBancaria( request.agencia(), request.numero(), request.saldoInicial(), request.ativa(),
                 pessoa, tipo );
 
-        return contaBancariaRepository.save( conta );
+        contaBancariaRepository.save( conta );
+
+        return ContaBancariaResponse.deEntity( conta );
+
+    }
+
+    private ContaBancaria buscarPorEntidadeId( Long id ) {
+
+        return contaBancariaRepository.findById( id )
+                .orElseThrow( () -> new ContaInexistenteException( id ) );
+    }
+
+    @Transactional
+    public ContaBancariaResponse depositar ( Long id, MovimentacaoRequest request ) {
+
+        ContaBancaria conta = buscarPorEntidadeId( id );
+
+        conta.depositar( request.valor() );
+
+        return ContaBancariaResponse.deEntity( conta );
+    }
+
+    @Transactional
+    public ContaBancariaResponse sacar( Long id, MovimentacaoRequest request ) {
+
+        ContaBancaria conta = buscarPorEntidadeId( id );
+
+        conta.sacar( request.valor() );
+
+        return ContaBancariaResponse.deEntity( conta );
     }
 
 }

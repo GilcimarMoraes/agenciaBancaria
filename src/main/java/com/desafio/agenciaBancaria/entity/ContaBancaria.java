@@ -67,7 +67,7 @@ public class ContaBancaria {
         this.saldo = this.saldo.subtract( valor );
     }
 
-    public void validarValor( BigDecimal valor ) {
+    private void validarValor( BigDecimal valor ) {
         if( valor == null || valor.compareTo( BigDecimal.ZERO) <= 0 ) {
             throw new ValorMovimentacaoInvalidoException(
                     "Valor da movimentação deve ser maior que zero."
@@ -75,7 +75,7 @@ public class ContaBancaria {
         }
     }
 
-    public void validarContaAtiva() {
+    private void validarContaAtiva() {
         if( !this.ativa ) {
             throw new ContaInativaException(
                     "Conta inativa, não pode ser movimentada."
@@ -101,7 +101,7 @@ public class ContaBancaria {
         return saldo;
     }
 
-    public boolean isAtivo() {
+    public boolean isAtiva() {
         return ativa;
     }
 
