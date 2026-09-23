@@ -6,6 +6,7 @@ import com.desafio.agenciaBancaria.dto.MovimentacaoRequest;
 import com.desafio.agenciaBancaria.entity.ContaBancaria;
 import com.desafio.agenciaBancaria.entity.Pessoa;
 import com.desafio.agenciaBancaria.entity.TipoConta;
+import com.desafio.agenciaBancaria.exception.AgenciaOuNumeroInexistenteException;
 import com.desafio.agenciaBancaria.exception.ContaInexistenteException;
 import com.desafio.agenciaBancaria.repository.ContaBancariaRepository;
 import com.desafio.agenciaBancaria.repository.PessoaRepository;
@@ -40,6 +41,11 @@ public class ContaBancariaService {
 
     @Transactional
     public ContaBancariaResponse abrirConta(ContaBancariaRequest request ) {
+
+        if( contaBancariaRepository.existsByAgenciaAndNumero( request.agencia(), request.numero() ) ){
+            throw new AgenciaOuNumeroInexistenteException( request.agencia(), request.numero() );
+        }
+
         Pessoa pessoa = pessoaRepository.findById( request.titularId() )
                 .orElseThrow( () -> new RuntimeException( "Nao encontrado." ) );
 

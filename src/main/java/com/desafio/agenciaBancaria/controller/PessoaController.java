@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,7 +30,8 @@ public class PessoaController {
     @Operation( summary = "Cadastrar cliente." )
     @ApiResponses ({
             @ApiResponse( responseCode = "201", description = "Cliente Cadastrado"),
-            @ApiResponse( responseCode = "400", description = "Dados inválidos")
+            @ApiResponse( responseCode = "400", description = "Dados inválidos"),
+            @ApiResponse( responseCode = "409", description = "CPF já cadastrado." )
 
     })
     public ResponseEntity<PessoaResponse> cadastrar( @Valid @RequestBody PessoaRequest request ) {
