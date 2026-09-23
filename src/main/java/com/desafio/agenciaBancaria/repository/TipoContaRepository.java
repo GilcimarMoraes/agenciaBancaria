@@ -4,4 +4,6 @@ import com.desafio.agenciaBancaria.entity.TipoConta;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TipoContaRepository extends JpaRepository<TipoConta,Long> {
+
+    boolean existsByNome( String nome );
 }
