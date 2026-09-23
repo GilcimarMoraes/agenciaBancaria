@@ -4,11 +4,13 @@ import com.desafio.agenciaBancaria.entity.ContaBancaria;
 import com.desafio.agenciaBancaria.entity.Pessoa;
 import com.desafio.agenciaBancaria.entity.TipoConta;
 
+import java.math.BigDecimal;
+
 public record ContaBancariaResponse(
         Long id,
-        int agencia,
-        int numero,
-        double saldo,
+        String agencia,
+        String numero,
+        BigDecimal saldo,
         Long titularId,
         Long tipoId
 ) {

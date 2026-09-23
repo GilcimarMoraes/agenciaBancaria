@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 public record PessoaResponse(
         Long id,
         String nome,
-        int cpf,
+        String cpf,
         String email
 
 ) {

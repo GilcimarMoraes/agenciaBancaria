@@ -1,5 +1,8 @@
 package com.desafio.agenciaBancaria.entity;
 
+import com.desafio.agenciaBancaria.exception.ContaInativaException;
+import com.desafio.agenciaBancaria.exception.SaldoInsuficienteException;
+import com.desafio.agenciaBancaria.exception.ValorMovimentacaoInvalidoException;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -12,9 +15,9 @@ public class ContaBancaria {
     @GeneratedValue( strategy = GenerationType.IDENTITY )
     private Long id;
 
-    private int agencia;
+    private String agencia;
 
-    private int numero;
+    private String numero;
 
     private BigDecimal saldo;
 
@@ -22,7 +25,7 @@ public class ContaBancaria {
 
     @ManyToOne( fetch = FetchType.LAZY, optional = false)
     @JoinColumn( name = "titular_id" )
-    private Pessoa pessoa;
+    private Pessoa titular;
 
     @ManyToOne( fetch = FetchType.LAZY, optional = false )
     @JoinColumn( name = "tipo_conta_id")
@@ -30,37 +33,47 @@ public class ContaBancaria {
 
     public ContaBancaria() {}
 
-    public ContaBancaria( int agencia, int numero, BigDecimal saldo, boolean ativo, Pessoa pessoa, TipoConta tipoConta) {
+    public ContaBancaria( String agencia, String numero, BigDecimal saldo, boolean ativo, Pessoa titular, TipoConta tipoConta) {
         this.agencia = agencia;
         this.numero = numero;
         this.saldo = saldo;
         this.ativo = ativo;
-        this.pessoa = pessoa;
+        this.titular = titular;
         this.tipoConta = tipoConta;
     }
 
-    public void depositar( double valor ) {
-        if( valor < 0 ) {
-            throw new IllegalArgumentException( "Valor deve ser maior que zero." );
-        }
-        saldo += valor;
+    public void depositar( BigDecimal valor ) {
+        validarValor( valor );
+        validarContaAtiva();
+
+        this.saldo = this.saldo.add( valor );
     }
 
-    public void sacar( double valor ) {
-        if( valor < 0 ) {
-            throw new IllegalArgumentException( "Valor deve ser maior que zero." );
+    public void sacar( BigDecimal valor ) {
+        validarValor( valor );
+        validarContaAtiva();
+        if( this.saldo.compareTo( valor ) < 0 ) {
+            throw new SaldoInsuficienteException(
+                    "Saldo insuficiente: " +this.saldo + ", saque: " + valor
+            );
         }
 
-        if( this.saldo < valor ) {
-            throw new IllegalArgumentException( "Saldo insuficiente." );
-        }
-
-        saldo -= valor;
+        this.saldo = this.saldo.subtract( valor );
     }
 
     public void validarValor( BigDecimal valor ) {
         if( valor == null || valor.compareTo( BigDecimal.ZERO) <= 0 ) {
-            throw new ValorMovimentacaoInvalidoException();
+            throw new ValorMovimentacaoInvalidoException(
+                    "Valor da movimentação deve ser maior que zero."
+            );
+        }
+    }
+
+    public void validarContaAtiva() {
+        if( this.ativo ) {
+            throw new ContaInativaException(
+                    "Conta inativa, não pode ser movimentada."
+            );
         }
     }
 
@@ -70,15 +83,15 @@ public class ContaBancaria {
         return id;
     }
 
-    public int getAgencia() {
+    public String getAgencia() {
         return agencia;
     }
 
-    public int getNumero() {
+    public String getNumero() {
         return numero;
     }
 
-    public double getSaldo() {
+    public BigDecimal getSaldo() {
         return saldo;
     }
 
@@ -87,7 +100,7 @@ public class ContaBancaria {
     }
 
     public Pessoa getPessoa() {
-        return pessoa;
+        return titular;
     }
 
     public TipoConta getTipoConta() {
