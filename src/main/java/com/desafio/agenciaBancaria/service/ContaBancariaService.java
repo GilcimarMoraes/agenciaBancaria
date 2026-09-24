@@ -6,7 +6,7 @@ import com.desafio.agenciaBancaria.dto.MovimentacaoRequest;
 import com.desafio.agenciaBancaria.entity.ContaBancaria;
 import com.desafio.agenciaBancaria.entity.Pessoa;
 import com.desafio.agenciaBancaria.entity.TipoConta;
-import com.desafio.agenciaBancaria.exception.AgenciaOuNumeroInexistenteException;
+import com.desafio.agenciaBancaria.exception.AgenciaNumeroJaCadastradoException;
 import com.desafio.agenciaBancaria.exception.ContaInexistenteException;
 import com.desafio.agenciaBancaria.repository.ContaBancariaRepository;
 import com.desafio.agenciaBancaria.repository.PessoaRepository;

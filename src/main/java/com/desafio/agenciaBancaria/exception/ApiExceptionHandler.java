@@ -1,8 +1,11 @@
 package com.desafio.agenciaBancaria.exception;
 
 import java.time.Instant;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.stream.Collectors;
+
+import com.desafio.agenciaBancaria.dto.ApiErrorResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -14,6 +17,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  */
 @RestControllerAdvice
 public class ApiExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger( ApiExceptionHandler.class );
     /** Cria o tradutor de exceções usado por todos os controllers. */
     public ApiExceptionHandler() {
     }
@@ -25,20 +30,20 @@ public class ApiExceptionHandler {
      * @return corpo de erro padronizado
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    ResponseEntity<Map<String, Object>> dadosInvalidos(MethodArgumentNotValidException erro) {
+    ResponseEntity<ApiErrorResponse> dadosInvalidos(MethodArgumentNotValidException erro) {
         String detalhe = erro.getBindingResult().getFieldErrors().stream()
                 .map(campo -> campo.getField() + ": " + campo.getDefaultMessage())
-                .findFirst().orElse("Dados invalidos");
+                .collect(Collectors.joining("; "));
         return resposta(HttpStatus.BAD_REQUEST, detalhe);
     }
 
     /**
-     * Converte contas com valor de movimentação inválida em um {@code 400 Not Found}
+     * Converte contas com valor de movimentação inválida em um {@code 400 Bad Request}
      * @param erro exceção lançada pela camada de aplicação
      * @return corpo de erro padronizado
      */
     @ExceptionHandler( ValorMovimentacaoInvalidoException.class )
-    ResponseEntity<Map<String, Object>> valorInvalido( ValorMovimentacaoInvalidoException erro ) {
+    ResponseEntity<ApiErrorResponse> valorInvalido( ValorMovimentacaoInvalidoException erro ) {
         return resposta( HttpStatus.BAD_REQUEST, erro.getMessage() );
     }
 
@@ -48,32 +53,34 @@ public class ApiExceptionHandler {
      * @return corpo de erro padronizado
      */
     @ExceptionHandler( ContaInexistenteException.class )
-    ResponseEntity<Map<String, Object>> contaNaoEncontrada( ContaInexistenteException erro ) {
+    ResponseEntity<ApiErrorResponse> contaNaoEncontrada( ContaInexistenteException erro ) {
         return resposta( HttpStatus.NOT_FOUND, erro.getMessage() );
     }
 
 
-    @ExceptionHandler( {AgenciaOuNumeroInexistenteException.class,
+    @ExceptionHandler( {AgenciaNumeroJaCadastradoException.class,
     ContaInativaException.class,
-    CpfCadatradoException.class,
+    CpfCadatradosException.class,
     SaldoInsuficienteException.class } )
-    ResponseEntity<Map<String, Object>> conflito(AgenciaOuNumeroInexistenteException erro) {
+    ResponseEntity<ApiErrorResponse> conflito(RuntimeException erro) {
         return resposta(HttpStatus.CONFLICT, erro.getMessage());
     }
 
     @ExceptionHandler( Exception.class )
-    ResponseEntity<Map<String, Object>> generico( Exception erro ) {
-        System.err.println( "Erro inesperado." );
+    ResponseEntity<ApiErrorResponse> generico( Exception erro ) {
+        log.error( "Erro inesperado.", erro );
         return resposta( HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno inesperado." );
     }
 
-    private ResponseEntity<Map<String, Object>> resposta(HttpStatus status, String detalhe) {
-        Map<String, Object> corpo = new LinkedHashMap<>();
-        corpo.put("timestamp", Instant.now());
-        corpo.put("status", status.value());
-        corpo.put("erro", status.getReasonPhrase());
-        corpo.put("detalhe", detalhe);
-        return ResponseEntity.status(status).body(corpo);
+    private ResponseEntity<ApiErrorResponse> resposta(HttpStatus status, String detalhe) {
+        ApiErrorResponse body = new ApiErrorResponse(
+                Instant.now(),
+                status.value(),
+                status.getReasonPhrase(),
+                detalhe
+        );
+
+        return ResponseEntity.status( status ).body( body );
     }
 }
 
