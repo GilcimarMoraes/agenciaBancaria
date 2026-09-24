@@ -8,6 +8,8 @@ import com.desafio.agenciaBancaria.entity.Pessoa;
 import com.desafio.agenciaBancaria.entity.TipoConta;
 import com.desafio.agenciaBancaria.exception.AgenciaNumeroJaCadastradoException;
 import com.desafio.agenciaBancaria.exception.ContaInexistenteException;
+import com.desafio.agenciaBancaria.exception.PessoaNaoEncontradaException;
+import com.desafio.agenciaBancaria.exception.TipoContaNaoEncontradoException;
 import com.desafio.agenciaBancaria.repository.ContaBancariaRepository;
 import com.desafio.agenciaBancaria.repository.PessoaRepository;
 import com.desafio.agenciaBancaria.repository.TipoContaRepository;
@@ -43,14 +45,14 @@ public class ContaBancariaService {
     public ContaBancariaResponse abrirConta(ContaBancariaRequest request ) {
 
         if( contaBancariaRepository.existsByAgenciaAndNumero( request.agencia(), request.numero() ) ){
-            throw new AgenciaOuNumeroInexistenteException( request.agencia(), request.numero() );
+            throw new AgenciaNumeroJaCadastradoException( request.agencia(), request.numero() );
         }
 
         Pessoa pessoa = pessoaRepository.findById( request.titularId() )
-                .orElseThrow( () -> new RuntimeException( "Nao encontrado." ) );
+                .orElseThrow( () -> new PessoaNaoEncontradaException( request.titularId() ) );
 
         TipoConta tipo = tipoContaRepository.findById( request.tipoContaId() )
-                .orElseThrow( () -> new RuntimeException( "tipo nao encontrado" ) );
+                .orElseThrow( () -> new TipoContaNaoEncontradoException( request.tipoContaId() ) );
 
         ContaBancaria conta = new ContaBancaria( request.agencia(), request.numero(), request.saldoInicial(), request.ativa(),
                 pessoa, tipo );

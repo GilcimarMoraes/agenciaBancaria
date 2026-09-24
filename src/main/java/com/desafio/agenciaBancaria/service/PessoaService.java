@@ -21,7 +21,7 @@ public class PessoaService {
     public PessoaResponse cadastrar( PessoaRequest request ) {
 
         if(pessoaRepository.existsByCpf( request.cpf() ) ){
-            throw new CpfCadatradoException( request.cpf() );
+            throw new CpfCadatradosException( request.cpf() );
         }
 
         Pessoa pessoa = new Pessoa( request.nome(), request.cpf(), request.email());

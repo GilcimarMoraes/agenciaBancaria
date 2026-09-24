@@ -57,6 +57,16 @@ public class ApiExceptionHandler {
         return resposta( HttpStatus.NOT_FOUND, erro.getMessage() );
     }
 
+    @ExceptionHandler( PessoaNaoEncontradaException.class )
+    ResponseEntity<ApiErrorResponse> pessoaNaoEncontrada( PessoaNaoEncontradaException erro ) {
+        return resposta( HttpStatus.NOT_FOUND, erro.getMessage() );
+    }
+
+    @ExceptionHandler( TipoContaNaoEncontradoException.class )
+    ResponseEntity<ApiErrorResponse> tipoContaNaoEncontrado( TipoContaNaoEncontradoException erro ) {
+        return resposta( HttpStatus.NOT_FOUND, erro.getMessage() );
+    }
+
 
     @ExceptionHandler( {AgenciaNumeroJaCadastradoException.class,
     ContaInativaException.class,
