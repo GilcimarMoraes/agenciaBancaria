@@ -14,7 +14,7 @@ public class Pessoa {
     @GeneratedValue( strategy = GenerationType.IDENTITY )
     private Long id;
 
-    @Column( unique = true, nullable = false, length = 120)
+    @Column( nullable = false, length = 120)
     private String nome;
 
     @Column( unique = true, nullable = false, length = 11)

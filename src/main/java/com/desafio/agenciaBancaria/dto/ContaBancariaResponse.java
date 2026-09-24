@@ -12,7 +12,9 @@ public record ContaBancariaResponse(
         String numero,
         BigDecimal saldo,
         Long titularId,
-        Long tipoId
+        String titularNome,
+        Long tipoId,
+        String tipoNome
 ) {
 
     public static ContaBancariaResponse deEntity( ContaBancaria contaBancaria ) {
@@ -22,7 +24,9 @@ public record ContaBancariaResponse(
                 contaBancaria.getNumero(),
                 contaBancaria.getSaldo(),
                 contaBancaria.getPessoa().getId(),
-                contaBancaria.getTipoConta().getId()
+                contaBancaria.getPessoa().getNome(),
+                contaBancaria.getTipoConta().getId(),
+                contaBancaria.getTipoConta().getNome()
 
         );
     }

@@ -70,7 +70,7 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler( {AgenciaNumeroJaCadastradoException.class,
     ContaInativaException.class,
-    CpfCadatradosException.class,
+    CpfCadastradoException.class,
     SaldoInsuficienteException.class } )
     ResponseEntity<ApiErrorResponse> conflito(RuntimeException erro) {
         return resposta(HttpStatus.CONFLICT, erro.getMessage());

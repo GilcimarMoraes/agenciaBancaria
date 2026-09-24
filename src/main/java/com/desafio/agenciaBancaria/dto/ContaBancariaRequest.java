@@ -21,7 +21,6 @@ public record ContaBancariaRequest(
         message = "Saldo inicial não pode ser negativo" )
         BigDecimal saldoInicial,
 
-        @NotNull( message = "O campo 'ativa' é obrigatória." )
         boolean ativa,
 
         @NotNull( message = "O titularId é obrigatório." )
