@@ -2,7 +2,7 @@ package com.desafio.agenciaBancaria.exception;
 
 public class ContaInativaException extends RuntimeException{
 
-    public ContaInativaException( String message ) {
-        super( message );
+    public ContaInativaException() {
+        super( "Conta Inativa" );
     }
 }

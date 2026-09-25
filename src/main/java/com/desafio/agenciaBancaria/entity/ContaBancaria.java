@@ -36,9 +36,7 @@ public class ContaBancaria {
     public ContaBancaria( String agencia, String numero, BigDecimal saldo,
                           boolean ativa, Pessoa titular, TipoConta tipoConta) {
         if( saldo == null || saldo.compareTo(BigDecimal.ZERO) < 0 ) {
-            throw new ValorMovimentacaoInvalidoException(
-                    "Saldo inicial não pode ser negativo."
-            );
+            throw new ValorMovimentacaoInvalidoException();
         }
         this.agencia = agencia;
         this.numero = numero;
@@ -48,42 +46,38 @@ public class ContaBancaria {
         this.tipoConta = tipoConta;
     }
 
-    public void depositar( BigDecimal valor ) {
+    public void creditar( BigDecimal valor ) {
         validarValor( valor );
-        validarContaAtiva();
+        validarConta();
 
         this.saldo = this.saldo.add( valor );
     }
 
-    public void sacar( BigDecimal valor ) {
+    public void debitar( BigDecimal valor ) {
         validarValor( valor );
-        validarContaAtiva();
-        if( this.saldo.compareTo( valor ) < 0 ) {
-            throw new SaldoInsuficienteException(
-                    "Saldo insuficiente: " +this.saldo + ", saque: " + valor
-            );
-        }
+        validarConta();
+        validarSaldo( valor );
 
         this.saldo = this.saldo.subtract( valor );
     }
 
+    private void validarConta() {
+        if( !isAtiva() ) {
+            throw new ContaInativaException();
+        }
+    }
+
+    private void validarSaldo( BigDecimal valor ) {
+        if( saldo.compareTo( valor ) < 0 ){
+            throw new SaldoInsuficienteException();
+        }
+    }
+
     private void validarValor( BigDecimal valor ) {
-        if( valor == null || valor.compareTo( BigDecimal.ZERO) <= 0 ) {
-            throw new ValorMovimentacaoInvalidoException(
-                    "Valor da movimentação deve ser maior que zero."
-            );
+        if( valor == null || valor.compareTo( BigDecimal.ZERO ) <= 0 ) {
+            throw new ValorMovimentacaoInvalidoException();
         }
     }
-
-    private void validarContaAtiva() {
-        if( !this.ativa ) {
-            throw new ContaInativaException(
-                    "Conta inativa, não pode ser movimentada."
-            );
-        }
-    }
-
-
 
     public Long getId() {
         return id;

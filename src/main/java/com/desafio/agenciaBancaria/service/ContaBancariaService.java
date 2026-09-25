@@ -10,6 +10,7 @@ import com.desafio.agenciaBancaria.exception.*;
 import com.desafio.agenciaBancaria.repository.ContaBancariaRepository;
 import com.desafio.agenciaBancaria.repository.PessoaRepository;
 import com.desafio.agenciaBancaria.repository.TipoContaRepository;
+import com.desafio.agenciaBancaria.transacoes.Transacoes;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,11 +25,14 @@ public class ContaBancariaService {
 
     private final TipoContaRepository tipoContaRepository;
 
+    private final Transacoes transacao;
+
     public ContaBancariaService(ContaBancariaRepository contaBancariaRepository,
                                 PessoaRepository pessoaRepository,
-                                TipoContaRepository tipoContaRepository) {
+                                TipoContaRepository tipoContaRepository, Transacoes transacao) {
         this.contaBancariaRepository = contaBancariaRepository;
         this.pessoaRepository = pessoaRepository;
+        this.transacao = transacao;
         this.tipoContaRepository = tipoContaRepository;
     }
 
@@ -81,7 +85,8 @@ public class ContaBancariaService {
 
         ContaBancaria conta = buscarPorEntidadeId( id );
 
-        conta.depositar( request.valor() );
+
+        transacao.depositar( conta, request.valor() );
 
         return ContaBancariaResponse.deEntity( conta );
     }
@@ -91,7 +96,7 @@ public class ContaBancariaService {
 
         ContaBancaria conta = buscarPorEntidadeId( id );
 
-        conta.sacar( request.valor() );
+        transacao.sacar( conta, request.valor() );
 
         return ContaBancariaResponse.deEntity( conta );
     }
