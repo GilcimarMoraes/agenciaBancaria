@@ -19,18 +19,15 @@ public class CargaInicialTipoConta implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if( tipoContaRepository.count() > 0 ) {
-            log.info( "Tipos de conta já carregados. Pulando carga inicial." );
-
-            return;
-        }
-
-        log.info( "Carregamento tipos de contas iniciais");
         for( TipoContaEnum tipo: TipoContaEnum.values() ) {
+            if( tipoContaRepository.existsByNome( tipo.getNome() ) ) {
+                log.info( " -> Já existe: {}", tipo.getNome() );
+                continue;
+            }
             tipoContaRepository.save( new TipoConta( tipo.getNome() ) );
-            log.info( " -> Tipo de conta inserido: {}", tipo.getNome() );
+            log.info( " -> Novo tipo inserido: {}", tipo.getNome() );
         }
 
-        log.info( "Carga inicial concluída. Total: {}", TipoContaEnum.values().length );
+        log.info( "Carga de tipos de conta verificada." );
     }
 }
